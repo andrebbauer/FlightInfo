@@ -6,3 +6,4 @@
 - Fading snow animation when switching flights
 - Origin and destination labels have a transform animation
 - Flight status change has a cube transition using translation and scaling
+- Summary (top label with date) disappears before changing value
