@@ -71,7 +71,40 @@ private extension ViewController {
   }
   
   func move(label: UILabel, text: String, offset: CGPoint) {
-    //TODO: Animate a label's translation property
+    // create and setup temp label
+    let tempLabel = duplicate(label)
+    tempLabel.text = text
+    tempLabel.transform = .init(translationX: offset.x, y: offset.y)
+    tempLabel.alpha = 0
+    view.addSubview(tempLabel)
+    
+    // fade out and translate real label
+    UIView.animate(
+      withDuration: 0.5,
+      delay: 0,
+      options: .curveEaseIn,
+      animations: {
+        label.transform = .init(translationX: offset.x, y: offset.y)
+        label.alpha = 0
+      }
+    )
+    // fade in and translate temp label
+    UIView.animate(
+      withDuration: 0.25,
+      delay: 0.2,
+      options: .curveEaseIn,
+      animations: {
+        tempLabel.transform = .identity
+        tempLabel.alpha = 1
+      },
+      completion: { _ in
+        // update real label and remove temp label
+        label.text = text
+        label.alpha = 1
+        label.transform = .identity
+        tempLabel.removeFromSuperview()
+      }
+    )
   }
   
   func cubeTransition(label: UILabel, text: String) {
@@ -88,8 +121,6 @@ private extension ViewController {
   
   func changeFlight(to flight: Flight, animated: Bool = false) {
     // populate the UI with the next flight's data
-    originLabel.text = flight.origin
-    destinationLabel.text = flight.destination
     flightNumberLabel.text = flight.number
     gateNumberLabel.text = flight.gateNumber
     statusLabel.text = flight.status
@@ -100,8 +131,13 @@ private extension ViewController {
         to: UIImage(named: flight.weatherImageName)!,
         showEffects: flight.showWeatherEffects
       )
+      
+      move(label: originLabel, text: flight.origin, offset: .init(x: -80, y: 0))
+      move(label: destinationLabel, text: flight.destination, offset: .init(x: 80, y: 0))
     } else {
       background.image = UIImage(named: flight.weatherImageName)
+      originLabel.text = flight.origin
+      destinationLabel.text = flight.destination
     }
     
     // schedule next flight
