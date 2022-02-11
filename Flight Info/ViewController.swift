@@ -60,6 +60,14 @@ private extension ViewController {
         tempView.removeFromSuperview()
       }
     )
+    
+    UIView.animate(
+      withDuration: 1,
+      delay: 0,
+      options: .curveEaseOut,
+      animations: {
+        self.snowView.alpha = showEffects ? 1.0 : 0
+      })
   }
   
   func move(label: UILabel, text: String, offset: CGPoint) {
